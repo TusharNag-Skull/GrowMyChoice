@@ -21,20 +21,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const hamburger = document.getElementById('hamburger');
     const navLinks = document.getElementById('navLinks');
 
-    hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        navLinks.classList.toggle('open');
-        document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
-    });
-
-    // Close mobile nav on link click
-    navLinks.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-            hamburger.classList.remove('active');
-            navLinks.classList.remove('open');
-            document.body.style.overflow = '';
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('open');
+            document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
         });
-    });
+
+        // Close mobile nav on link click
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navLinks.classList.remove('open');
+                document.body.style.overflow = '';
+            });
+        });
+    }
 
     // ========== SCROLL REVEAL ANIMATIONS ==========
     const revealElements = document.querySelectorAll('.reveal');
@@ -115,49 +117,51 @@ document.addEventListener('DOMContentLoaded', () => {
     // ========== CONTACT FORM HANDLING ==========
     const contactForm = document.getElementById('contactForm');
 
-    contactForm.addEventListener('submit', (e) => {
-        e.preventDefault();
+    if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
 
-        const btn = contactForm.querySelector('button[type="submit"]');
-        const originalHTML = btn.innerHTML;
-        const formData = new FormData(contactForm);
+            const btn = contactForm.querySelector('button[type="submit"]');
+            const originalHTML = btn.innerHTML;
+            const formData = new FormData(contactForm);
 
-        // Show sending state
-        btn.innerHTML = `Sending...`;
-        btn.disabled = true;
+            // Show sending state
+            btn.innerHTML = `Sending...`;
+            btn.disabled = true;
 
-        // Actually send to Formspree
-        fetch(contactForm.action, {
-            method: 'POST',
-            body: formData,
-            headers: { 'Accept': 'application/json' }
-        })
-            .then(response => {
-                if (response.ok) {
-                    btn.innerHTML = `
+            // Actually send to Formspree
+            fetch(contactForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'Accept': 'application/json' }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        btn.innerHTML = `
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     Message Sent!
                 `;
-                    btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                    contactForm.reset();
-                } else {
-                    throw new Error('Form submission failed');
-                }
-            })
-            .catch(error => {
-                btn.innerHTML = `Error! Try Again`;
-                btn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
-            })
-            .finally(() => {
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                    btn.style.background = '';
-                    btn.disabled = false;
-                }, 3000);
-            });
-    });
+                        btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                        contactForm.reset();
+                    } else {
+                        throw new Error('Form submission failed');
+                    }
+                })
+                .catch(() => {
+                    btn.innerHTML = `Error! Try Again`;
+                    btn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                })
+                .finally(() => {
+                    setTimeout(() => {
+                        btn.innerHTML = originalHTML;
+                        btn.style.background = '';
+                        btn.disabled = false;
+                    }, 3000);
+                });
+        });
+    }
 
     // ========== ACTIVE NAV LINK HIGHLIGHTING ==========
     const sections = document.querySelectorAll('section[id]');
@@ -180,18 +184,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     sections.forEach(section => navHighlightObserver.observe(section));
-
-    // ========== PARALLAX ON HERO ORBS ==========
-    const orbs = document.querySelectorAll('.gradient-orb');
-
-    window.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 2;
-        const y = (e.clientY / window.innerHeight - 0.5) * 2;
-
-        orbs.forEach((orb, i) => {
-            const speed = (i + 1) * 8;
-            orb.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
-        });
-    }, { passive: true });
 
 });
